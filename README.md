@@ -1,6 +1,18 @@
 # doc-compose
 
-This template should help get you started developing with Vue 3 in Vite.
+A doc enhancement tool for gmail and google doc.
+
+## Introduction
+
+### The problem and the solution
+
+Typically, to copy and paste your doc from html to `gmail/google doc` will screw things up. This enhancement tool can help you adjust the layout of your doc.
+
+## RoadMap
+
+- [ ] doc enhancement (`text/html` only)
+  - [ ] templates to adjust layout
+  - [ ] doc previewer
 
 ## Recommended IDE Setup
 
