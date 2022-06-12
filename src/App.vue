@@ -1,81 +1,79 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
+import hljs from "highlight.js/lib/core";
+import xml from "highlight.js/lib/languages/xml";
+import { PrismEditor } from "vue-prism-editor";
+import "vue-prism-editor/dist/prismeditor.min.css";
+import "highlight.js/styles/base16/tomorrow.css";
+import { ref } from "vue";
+
+const code = ref(`<div style="width: 960px;">{{ content }}</div>`);
+const mime_data = ref<Object>({ "": "" });
+
+hljs.registerLanguage("xml", xml);
+
+function highlighter(code: string) {
+  return hljs.highlight(code, { language: "xml" }).value;
+}
+
+function onpaste(event: ClipboardEvent) {
+  const clip_items = {};
+  event.clipboardData?.types.forEach((t) => {
+    Object.assign(clip_items, { [t]: event.clipboardData?.getData(t) });
+  });
+  mime_data.value = clip_items;
+  event.preventDefault();
+}
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
-
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
+  <n-layout>
+    <n-layout-header>
+      <a href="https://github.com/DevecorSoft/doc-compose"
+        ><img
+          loading="lazy"
+          width="149"
+          height="149"
+          src="https://github.blog/wp-content/uploads/2008/12/forkme_left_green_007200.png?resize=149%2C149"
+          class="attachment-full size-full"
+          alt="Fork me on GitHub"
+          data-recalc-dims="1"
+      /></a>
+    </n-layout-header>
+    <n-layout-content>
+      <n-space justify="center">
+        <n-card>
+          <n-tabs type="line" animated>
+            <n-tab-pane
+              v-for="(mdata, mtype) in mime_data"
+              :name="mtype"
+              :tab="mtype"
+            >
+              <n-input
+                type="textarea"
+                placeholder=""
+                clearable
+                autofocus
+                readonly
+                show-count
+                :autosize="{
+                  minRows: 30,
+                }"
+                style="min-width: 30rem"
+                @paste="onpaste"
+                :value="mdata"
+              ></n-input>
+            </n-tab-pane>
+          </n-tabs>
+        </n-card>
+        <n-card>
+          <prism-editor
+            class="my-editor"
+            v-model="code"
+            :highlight="highlighter"
+            line-numbers
+          ></prism-editor>
+        </n-card>
+      </n-space>
+    </n-layout-content>
+  </n-layout>
 </template>
-
-<style>
-@import './assets/base.css';
-
-#app {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-
-  font-weight: normal;
-}
-
-header {
-  line-height: 1.5;
-}
-
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
-}
-
-a,
-.green {
-  text-decoration: none;
-  color: hsla(160, 100%, 37%, 1);
-  transition: 0.4s;
-}
-
-@media (hover: hover) {
-  a:hover {
-    background-color: hsla(160, 100%, 37%, 0.2);
-  }
-}
-
-@media (min-width: 1024px) {
-  body {
-    display: flex;
-    place-items: center;
-  }
-
-  #app {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    padding: 0 2rem;
-  }
-
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-}
-</style>
