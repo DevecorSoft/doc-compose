@@ -5,9 +5,10 @@ import { PrismEditor } from "vue-prism-editor";
 import "vue-prism-editor/dist/prismeditor.min.css";
 import "highlight.js/styles/base16/tomorrow.css";
 import { ref } from "vue";
+import content from "@/components/content.vue";
 
 const code = ref(`<div style="width: 960px;">{{ content }}</div>`);
-const mime_data = ref<Object>({ "": "" });
+const mime_data = ref<Object>({});
 
 hljs.registerLanguage("xml", xml);
 
@@ -22,6 +23,25 @@ function onpaste(event: ClipboardEvent) {
   });
   mime_data.value = clip_items;
   event.preventDefault();
+}
+
+function compose(template: string, mdata: string, mtype = "text/html") {
+  const rich_text = template.replace(/\{\{\s*content\s*\}\}/, mdata.slice(22));
+  const blob_rich = new Blob([rich_text], { type: mtype });
+  const data = [new ClipboardItem({ [mtype]: blob_rich })];
+  navigator.clipboard
+    .write(data)
+    .then(() => {
+      window.$message?.success("Congratulation! compose finished.");
+    })
+    .catch((err) => {
+      console.error(err);
+      window.$message?.error("Please authorize.");
+    });
+}
+
+function onclick() {
+  compose(code.value, mime_data.value["text/html"]);
 }
 </script>
 
@@ -42,11 +62,13 @@ function onpaste(event: ClipboardEvent) {
     <n-layout-content>
       <n-space justify="center">
         <n-card>
+          <n-input @paste="onpaste"></n-input>
           <n-tabs type="line" animated>
             <n-tab-pane
               v-for="(mdata, mtype) in mime_data"
               :name="mtype"
               :tab="mtype"
+              display-directive="show"
             >
               <n-input
                 type="textarea"
@@ -56,7 +78,7 @@ function onpaste(event: ClipboardEvent) {
                 readonly
                 show-count
                 :autosize="{
-                  minRows: 30,
+                  minRows: 3,
                 }"
                 style="min-width: 30rem"
                 @paste="onpaste"
@@ -65,15 +87,21 @@ function onpaste(event: ClipboardEvent) {
             </n-tab-pane>
           </n-tabs>
         </n-card>
-        <n-card>
-          <prism-editor
-            class="my-editor"
-            v-model="code"
-            :highlight="highlighter"
-            line-numbers
-          ></prism-editor>
-        </n-card>
+        <n-space vertical>
+          <n-card>
+            <prism-editor
+              class="my-editor"
+              v-model="code"
+              :highlight="highlighter"
+              line-numbers
+            ></prism-editor>
+          </n-card>
+          <n-button secondary type="primary" @click="onclick">compose</n-button>
+        </n-space>
       </n-space>
     </n-layout-content>
   </n-layout>
+  <n-message-provider>
+    <content />
+  </n-message-provider>
 </template>
