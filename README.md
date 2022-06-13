@@ -12,6 +12,7 @@ Typically, to copy and paste your doc from html to `gmail/google doc` will screw
 
 - [ ] doc enhancement (`text/html` only)
   - [ ] templates to adjust layout
+  - [ ] svg2base64
   - [ ] doc previewer
 
 ## Recommended IDE Setup

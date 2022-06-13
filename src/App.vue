@@ -7,7 +7,17 @@ import "highlight.js/styles/base16/tomorrow.css";
 import { ref } from "vue";
 import content from "@/components/content.vue";
 
-const code = ref(`<div style="width: 960px;">{{ content }}</div>`);
+const code = ref(
+  `<div style="
+max-width: 960px;
+background-color: #F8FAFB;
+margin-left: auto;
+margin-right: auto;
+"
+>
+{{ content }}
+</div>`
+);
 const mime_data = ref<Object>({});
 
 hljs.registerLanguage("xml", xml);
@@ -62,7 +72,7 @@ function onclick() {
     <n-layout-content>
       <n-space justify="center">
         <n-card>
-          <n-input @paste="onpaste"></n-input>
+          <n-input @paste="onpaste" placeholder="⌘ + v"></n-input>
           <n-tabs type="line" animated>
             <n-tab-pane
               v-for="(mdata, mtype) in mime_data"
@@ -105,3 +115,9 @@ function onclick() {
     <content />
   </n-message-provider>
 </template>
+
+<style>
+textarea.prism-editor__textarea {
+  outline: 0px;
+}
+</style>
