@@ -8,6 +8,10 @@ A doc enhancement tool for gmail and google doc.
 
 Typically, to copy and paste your doc from html to `gmail/google doc` will screw things up. This enhancement tool can help you adjust the layout of your doc.
 
+## Demo
+
+[doc-compose demo](https://devecorsoft.github.io/doc-compose/)
+
 ## RoadMap
 
 - [ ] doc enhancement (`text/html` only)

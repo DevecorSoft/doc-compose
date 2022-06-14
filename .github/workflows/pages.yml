@@ -31,6 +31,7 @@ jobs:
           mv dist/* docs@next
           rm -r docs/*
           mv docs@next/* docs
+          cp _config.yml docs/_config.yml
           rm -r docs@next
           git add docs
           git config --local user.name "bot"
