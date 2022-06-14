@@ -1,0 +1,39 @@
+name: publish github pages
+on:
+  push:
+    branches: [main]
+    paths:
+      - "src/**"
+      - ".github/workflows/pages.yml"
+      - "index.html"
+      - "package.json"
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: "16"
+
+      - name: Build and commit
+        run: |
+          npm install
+          npm run build-only
+          git checkout pages
+          mkdir docs@next
+          mv dist/* docs@next
+          rm -r docs/*
+          mv docs@next/* docs
+          rm -r docs@next
+          git add docs
+          git config --local user.name "bot"
+          git config --local user.email "bot@github.com"
+          git commit -m "build html"
+          git push
