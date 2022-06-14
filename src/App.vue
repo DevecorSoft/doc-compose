@@ -36,8 +36,43 @@ function onpaste(event: ClipboardEvent) {
 }
 
 function compose(template: string, mdata: string, mtype = "text/html") {
-  const rich_text = template.replace(/\{\{\s*content\s*\}\}/, mdata.slice(22));
-  const blob_rich = new Blob([rich_text], { type: mtype });
+  const data_html = mdata.slice(22);
+  const rich_text = template.replace(/\{\{\s*content\s*\}\}/, data_html);
+
+  const dom_parser = new DOMParser();
+  const xml_serializer = new XMLSerializer();
+  const dom = dom_parser.parseFromString(
+    `<div id="dc-content">${rich_text}</div>`,
+    "text/html"
+  );
+
+  const svg_elements = dom.getElementsByTagName("svg");
+
+  for (let i = 0; i < svg_elements.length; i++) {
+    svg_elements.item(i)?.replaceWith(
+      (() => {
+        const item_xml = xml_serializer.serializeToString(
+          svg_elements.item(i)!
+        );
+        const img_node = document.createElement("img");
+        img_node.setAttribute(
+          "src",
+          `data:image/svg+xml;base64,${btoa(item_xml)}`
+        );
+        return img_node;
+      })()
+    );
+  }
+
+  const enhanced_text = xml_serializer.serializeToString(
+    dom.getElementById("dc-content")?.firstChild!
+  );
+
+  mime_data.value = {
+    [mtype]: enhanced_text,
+  };
+
+  const blob_rich = new Blob([enhanced_text], { type: mtype });
   const data = [new ClipboardItem({ [mtype]: blob_rich })];
   navigator.clipboard
     .write(data)
@@ -94,6 +129,7 @@ function onclick() {
                 @paste="onpaste"
                 :value="mdata"
               ></n-input>
+              <div v-html="mdata"></div>
             </n-tab-pane>
           </n-tabs>
         </n-card>
