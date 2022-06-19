@@ -15,6 +15,7 @@ max-width: 960px;
 background-color: #F8FAFB;
 margin-left: auto;
 margin-right: auto;
+padding: 20px;
 "
 >
 {{ content }}
@@ -64,6 +65,12 @@ function compose(template: string, mdata: string, mtype = "text/html") {
         return img_node;
       })()
     );
+  }
+
+  const a_elements = dom.getElementsByTagName("a");
+
+  for (let i = 0; i < a_elements.length; i++) {
+    console.log(a_elements.item(i)?.getAttribute("href"))
   }
 
   const enhanced_text = xml_serializer.serializeToString(
